@@ -4,4 +4,4 @@
 - [x] Recent Topics tool
 - [x] Bookmarks + Saved page
 - [x] Saved chat sessions
-- [ ] Push work to GitHub (needs GitHub connected in Project settings -> Git)
+- [x] Push work to GitHub
