@@ -1,10 +1,12 @@
-// @ts-nocheck -- run with `bun test`; bun:test types are not installed
+/// <reference types="bun" />
 import { describe, expect, test } from "bun:test";
 import { getRecentTopics, matchThenNowTopic, askNavigator, UNSUPPORTED_TOPIC } from "./api";
 
 describe("Then & Now topic matching", () => {
   test("feed algorithm questions match", () => {
-    expect(matchThenNowTopic("How did Twitter feed algorithms change visibility?")).toBe("Twitter feed algorithms");
+    expect(matchThenNowTopic("How did Twitter feed algorithms change visibility?")).toBe(
+      "Twitter feed algorithms",
+    );
   });
   test("unrelated questions do not match", () => {
     expect(matchThenNowTopic("How do HBCU students use TikTok?")).toBeNull();
@@ -22,5 +24,7 @@ describe("archive years", () => {
 
 test("unsupported topics return the exact refusal statement", async () => {
   expect((await askNavigator("quantum chromodynamics lattice")).answer).toBe(UNSUPPORTED_TOPIC);
-  expect(UNSUPPORTED_TOPIC).toBe("The requested topic is not covered in the available conference records.");
+  expect(UNSUPPORTED_TOPIC).toBe(
+    "The requested topic is not covered in the available conference records.",
+  );
 });

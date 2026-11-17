@@ -23,7 +23,14 @@ export function BookmarkButton({ size = "sm", className, ...item }: Props) {
   const Icon = existing ? BookmarkCheck : Bookmark;
   const label = existing ? `Remove "${item.title}" from Saved` : `Save "${item.title}"`;
   return (
-    <Button variant="outline" size={size === "icon" ? "icon" : "sm"} onClick={toggle} aria-label={label} aria-pressed={!!existing} className={className}>
+    <Button
+      variant="outline"
+      size={size === "icon" ? "icon" : "sm"}
+      onClick={toggle}
+      aria-label={label}
+      aria-pressed={!!existing}
+      className={className}
+    >
       <Icon className="h-4 w-4" />
       {size !== "icon" && <span className="ml-1">{existing ? "Saved" : "Save"}</span>}
     </Button>

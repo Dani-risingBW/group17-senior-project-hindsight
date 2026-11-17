@@ -27,7 +27,13 @@ const verdictClass: Record<Verdict, string> = {
   "Not confirmed": "bg-destructive text-destructive-foreground",
 };
 
-export function ThenAndNowPanel({ topic, onCitations }: { topic: string; onCitations?: (c: Citation[]) => void }) {
+export function ThenAndNowPanel({
+  topic,
+  onCitations,
+}: {
+  topic: string;
+  onCitations?: (c: Citation[]) => void;
+}) {
   const { data, isLoading } = useQuery({
     queryKey: ["thenNow", topic],
     queryFn: async () => {
@@ -42,12 +48,20 @@ export function ThenAndNowPanel({ topic, onCitations }: { topic: string; onCitat
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="font-serif text-2xl font-bold text-primary">{data.topic}: predictions vs. evidence</h2>
-        <BookmarkButton type="trend" refId={`then-now:${data.topic}`} title={`Then & Now: ${data.topic}`} />
+        <h2 className="font-serif text-2xl font-bold text-primary">
+          {data.topic}: predictions vs. evidence
+        </h2>
+        <BookmarkButton
+          type="trend"
+          refId={`then-now:${data.topic}`}
+          title={`Then & Now: ${data.topic}`}
+        />
       </div>
 
       <Card>
-        <CardHeader><CardTitle className="font-serif text-primary">Timeline</CardTitle></CardHeader>
+        <CardHeader>
+          <CardTitle className="font-serif text-primary">Timeline</CardTitle>
+        </CardHeader>
         <CardContent>
           <ol className="relative space-y-5 border-l-2 border-primary/30 pl-6">
             {data.milestones.map((m, i) => (
@@ -59,8 +73,14 @@ export function ThenAndNowPanel({ topic, onCitations }: { topic: string; onCitat
                 </div>
                 <p className="mt-1">{m.claim}</p>
                 <div className="mt-1 flex flex-col gap-0.5">
-                  <span className="text-xs text-muted-foreground">Source: <CiteLink c={m.source} /></span>
-                  {m.verdictSource && <span className="text-xs text-muted-foreground">Decided by: <CiteLink c={m.verdictSource} /></span>}
+                  <span className="text-xs text-muted-foreground">
+                    Source: <CiteLink c={m.source} />
+                  </span>
+                  {m.verdictSource && (
+                    <span className="text-xs text-muted-foreground">
+                      Decided by: <CiteLink c={m.verdictSource} />
+                    </span>
+                  )}
                 </div>
               </li>
             ))}
@@ -70,7 +90,11 @@ export function ThenAndNowPanel({ topic, onCitations }: { topic: string; onCitat
 
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
-          <CardHeader><CardTitle className="font-serif text-primary">Share of impressions to the top 10% of accounts</CardTitle></CardHeader>
+          <CardHeader>
+            <CardTitle className="font-serif text-primary">
+              Share of impressions to the top 10% of accounts
+            </CardTitle>
+          </CardHeader>
           <CardContent>
             <div className="h-56">
               <ResponsiveContainer>
@@ -83,14 +107,27 @@ export function ThenAndNowPanel({ topic, onCitations }: { topic: string; onCitat
                 </BarChart>
               </ResponsiveContainer>
             </div>
-            <div className="mt-2 space-y-0.5">{[...new Map(data.metric.map((m) => [m.source.excerpt, m.source])).values()].map((c) => <div key={c.excerpt}><CiteLink c={c} /></div>)}</div>
+            <div className="mt-2 space-y-0.5">
+              {[...new Map(data.metric.map((m) => [m.source.excerpt, m.source])).values()].map(
+                (c) => (
+                  <div key={c.excerpt}>
+                    <CiteLink c={c} />
+                  </div>
+                ),
+              )}
+            </div>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader><CardTitle className="font-serif text-accent">What modern AI changed</CardTitle></CardHeader>
+          <CardHeader>
+            <CardTitle className="font-serif text-accent">What modern AI changed</CardTitle>
+          </CardHeader>
           <CardContent className="space-y-4">
             {data.aiShift.map((a, i) => (
-              <div key={i} className="border-l-4 border-accent pl-3"><p>{a.text}</p><CiteLink c={a.source} /></div>
+              <div key={i} className="border-l-4 border-accent pl-3">
+                <p>{a.text}</p>
+                <CiteLink c={a.source} />
+              </div>
             ))}
           </CardContent>
         </Card>
@@ -103,7 +140,15 @@ export function ThenAndNowPanel({ topic, onCitations }: { topic: string; onCitat
             {data.summary.map((s, i) => (
               <span key={i}>
                 {s.sentence}{" "}
-                <Link to="/document/$submissionId" params={{ submissionId: s.source.submission_id }} search={{ highlight: s.source.excerpt }} className="font-semibold text-accent underline" aria-label={`Citation ${i + 1}: ${s.source.title}`}>[{i + 1}]</Link>{" "}
+                <Link
+                  to="/document/$submissionId"
+                  params={{ submissionId: s.source.submission_id }}
+                  search={{ highlight: s.source.excerpt }}
+                  className="font-semibold text-accent underline"
+                  aria-label={`Citation ${i + 1}: ${s.source.title}`}
+                >
+                  [{i + 1}]
+                </Link>{" "}
               </span>
             ))}
           </p>

@@ -48,9 +48,15 @@ export function SiteLayout({ children }: { children: ReactNode }) {
 }
 
 export function Highlight({ text, query }: { text: string; query: string }) {
-  const terms = query.toLowerCase().split(/\W+/).filter((t) => t.length > 2);
+  const terms = query
+    .toLowerCase()
+    .split(/\W+/)
+    .filter((t) => t.length > 2);
   if (!terms.length) return <>{text}</>;
-  const re = new RegExp(`(${terms.map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})`, "gi");
+  const re = new RegExp(
+    `(${terms.map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})`,
+    "gi",
+  );
   return (
     <>
       {text.split(re).map((part, i) =>

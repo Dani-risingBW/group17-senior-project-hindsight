@@ -1,9 +1,5 @@
 export type DocumentType =
-  | "Abstract"
-  | "Full Paper PDF"
-  | "Presentation"
-  | "Program"
-  | "Workshop Recording Transcript";
+  "Abstract" | "Full Paper PDF" | "Presentation" | "Program" | "Workshop Recording Transcript";
 
 export interface Author {
   name: string;
@@ -23,7 +19,9 @@ export interface ArchiveRecord {
 }
 
 /** Real conference years only. 2020, 2022 and 2023 never occurred. */
-export const CONFERENCE_YEARS = [2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2021, 2024] as const;
+export const CONFERENCE_YEARS = [
+  2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2021, 2024,
+] as const;
 
 export const TRACKS = [
   "Social Media & Public Sphere",
@@ -267,7 +265,10 @@ export const mockRecords: ArchiveRecord[] = [
     year: 2021,
     track: "AI & Algorithms",
     title: "Engagement Ranking Revisited: A Pandemic-Era Timeline Audit",
-    authors: [{ name: "Jamal Whitfield", affiliation: HU }, { name: "Danielle Brooks", affiliation: HU }],
+    authors: [
+      { name: "Jamal Whitfield", affiliation: HU },
+      { name: "Danielle Brooks", affiliation: HU },
+    ],
     document_type: "Full Paper PDF",
     keywords: ["feed algorithms", "algorithmic audit", "Twitter", "visibility", "Black Twitter"],
     abstract:

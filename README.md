@@ -46,20 +46,20 @@ Open the local URL printed in the terminal.
 
 Copy `.env.example` to `.env` and adjust as needed. The app runs without any variables set.
 
-| Variable            | Description                                                                 |
-| ------------------- | --------------------------------------------------------------------------- |
+| Variable            | Description                                                                        |
+| ------------------- | ---------------------------------------------------------------------------------- |
 | `VITE_API_BASE_URL` | Base URL of the real backend. When unset, the app uses mock data from `src/data/`. |
 
 ## Scripts
 
-| Command           | Description                          |
-| ----------------- | ------------------------------------ |
-| `npm run dev`     | Start the development server         |
-| `npm run build`   | Build for production                 |
-| `npm run preview` | Preview the production build         |
-| `npm run lint`    | Run ESLint                           |
-| `npm run format`  | Format code with Prettier            |
-| `npm test`        | Run unit tests (requires Bun)        |
+| Command           | Description                   |
+| ----------------- | ----------------------------- |
+| `npm run dev`     | Start the development server  |
+| `npm run build`   | Build for production          |
+| `npm run preview` | Preview the production build  |
+| `npm run lint`    | Run ESLint                    |
+| `npm run format`  | Format code with Prettier     |
+| `npm test`        | Run unit tests (requires Bun) |
 
 ## Project Structure
 

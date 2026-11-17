@@ -18,16 +18,26 @@ async function http<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 /* ---------- Communities (derived from track + keywords) ---------- */
-export const COMMUNITIES = ["HBCU students", "Black Twitter", "Rural users", "Older adults"] as const;
+export const COMMUNITIES = [
+  "HBCU students",
+  "Black Twitter",
+  "Rural users",
+  "Older adults",
+] as const;
 export type Community = (typeof COMMUNITIES)[number];
 
 export function getCommunities(r: ArchiveRecord): Community[] {
   const k = r.keywords.map((x) => x.toLowerCase());
   const out: Community[] = [];
-  if (k.some((x) => x.includes("hbcu")) || r.full_text_content.includes("HBCU")) out.push("HBCU students");
+  if (k.some((x) => x.includes("hbcu")) || r.full_text_content.includes("HBCU"))
+    out.push("HBCU students");
   if (k.includes("black twitter")) out.push("Black Twitter");
-  if (k.some((x) => x.includes("rural")) || /rural/i.test(r.full_text_content)) out.push("Rural users");
-  if (k.some((x) => x.includes("older")) || /older (adults|voters|audiences)/i.test(r.full_text_content))
+  if (k.some((x) => x.includes("rural")) || /rural/i.test(r.full_text_content))
+    out.push("Rural users");
+  if (
+    k.some((x) => x.includes("older")) ||
+    /older (adults|voters|audiences)/i.test(r.full_text_content)
+  )
     out.push("Older adults");
   return out;
 }
@@ -59,10 +69,15 @@ function score(r: ArchiveRecord, terms: string[]) {
   return s;
 }
 const tokenize = (q: string) =>
-  q.toLowerCase().split(/\W+/).filter((t) => t.length > 2);
+  q
+    .toLowerCase()
+    .split(/\W+/)
+    .filter((t) => t.length > 2);
 
 /** POST /search  body: SearchParams  -> { results: SearchResult[], total: number } */
-export async function searchArchive(p: SearchParams): Promise<{ results: SearchResult[]; total: number }> {
+export async function searchArchive(
+  p: SearchParams,
+): Promise<{ results: SearchResult[]; total: number }> {
   if (API_BASE) return http("/search", { method: "POST", body: JSON.stringify(p) });
   await delay();
   const terms = tokenize(p.query);
@@ -101,7 +116,8 @@ export interface Citation {
   page?: number;
 }
 
-export const UNSUPPORTED_TOPIC = "The requested topic is not covered in the available conference records.";
+export const UNSUPPORTED_TOPIC =
+  "The requested topic is not covered in the available conference records.";
 
 function pageOf(r: ArchiveRecord, excerpt: string) {
   const i = r.full_text_content.split("\n\n").findIndex((p) => p.includes(excerpt));
@@ -165,7 +181,14 @@ export async function getThemeTrends(): Promise<{
   if (API_BASE) return http("/trends");
   await delay();
   const { CONFERENCE_YEARS } = await import("@/data/mockRecords");
-  const themes = ["Twitter", "feed algorithms", "misinformation", "platform adoption", "research ethics", "journalism"];
+  const themes = [
+    "Twitter",
+    "feed algorithms",
+    "misinformation",
+    "platform adoption",
+    "research ethics",
+    "journalism",
+  ];
   const byYear = CONFERENCE_YEARS.map((year) => {
     const row: Record<string, number> = { year };
     for (const t of themes)
@@ -201,10 +224,25 @@ export interface ThenAndNow {
 }
 const cite = (id: string, excerpt: string): Citation => {
   const r = mockRecords.find((x) => x.submission_id === id)!;
-  return { submission_id: id, title: r.title, year: r.year, excerpt, relevance: 1, page: pageOf(r, excerpt) };
+  return {
+    submission_id: id,
+    title: r.title,
+    year: r.year,
+    excerpt,
+    relevance: 1,
+    page: pageOf(r, excerpt),
+  };
 };
 
-const FEED_KEYWORDS = ["feed", "algorithm", "ranking", "ranked", "timeline", "recommendation", "for you"];
+const FEED_KEYWORDS = [
+  "feed",
+  "algorithm",
+  "ranking",
+  "ranked",
+  "timeline",
+  "recommendation",
+  "for you",
+];
 /** Returns the Then & Now topic a question relates to, or null. */
 export function matchThenNowTopic(question: string): string | null {
   const q = question.toLowerCase();
@@ -216,28 +254,98 @@ export async function getThenAndNow(topic: string): Promise<ThenAndNow | null> {
   if (API_BASE) return http(`/then-and-now?topic=${encodeURIComponent(topic)}`);
   await delay(400);
   if (topic !== "Twitter feed algorithms") return null;
-  const c2012 = cite("SMTCW-2012-007", "We expect that this openness will persist as adoption grows");
-  const c2015 = cite("SMTCW-2015-042", "concentrating visibility among accounts that already have large followings");
-  const c2016 = cite("SMTCW-2016-027", "We predict that community hashtags such as those used by Black Twitter will lose reach unless they generate high early engagement.");
-  const c2019 = cite("SMTCW-2019-024", "the top 10 percent of accounts received 62 percent of impressions");
-  const c2021 = cite("SMTCW-2021-025", "the top 10 percent of accounts received 71 percent of impressions in ranked timelines");
-  const c2021b = cite("SMTCW-2021-025", "Black Twitter hashtags still trended when they gathered strong early engagement");
-  const c2021c = cite("SMTCW-2021-025", "Recommended content from outside the follow graph began to appear in timelines");
+  const c2012 = cite(
+    "SMTCW-2012-007",
+    "We expect that this openness will persist as adoption grows",
+  );
+  const c2015 = cite(
+    "SMTCW-2015-042",
+    "concentrating visibility among accounts that already have large followings",
+  );
+  const c2016 = cite(
+    "SMTCW-2016-027",
+    "We predict that community hashtags such as those used by Black Twitter will lose reach unless they generate high early engagement.",
+  );
+  const c2019 = cite(
+    "SMTCW-2019-024",
+    "the top 10 percent of accounts received 62 percent of impressions",
+  );
+  const c2021 = cite(
+    "SMTCW-2021-025",
+    "the top 10 percent of accounts received 71 percent of impressions in ranked timelines",
+  );
+  const c2021b = cite(
+    "SMTCW-2021-025",
+    "Black Twitter hashtags still trended when they gathered strong early engagement",
+  );
+  const c2021c = cite(
+    "SMTCW-2021-025",
+    "Recommended content from outside the follow graph began to appear in timelines",
+  );
   const c2024 = cite("SMTCW-2024-004", "54 percent of impressions came from unfollowed accounts");
-  const c2024b = cite("SMTCW-2024-004", "This goes further than 2015 predictions, which anticipated ranking within the follow graph rather than replacement of it.");
+  const c2024b = cite(
+    "SMTCW-2024-004",
+    "This goes further than 2015 predictions, which anticipated ranking within the follow graph rather than replacement of it.",
+  );
   return {
     topic,
     milestones: [
-      { year: 2012, kind: "Prediction", claim: "Chronological feeds give every voice equal visibility, and that openness will last as Twitter grows.", verdict: "Not confirmed", verdictSource: c2019, source: c2012 },
-      { year: 2015, kind: "Prediction", claim: "Ranked feeds will concentrate attention among accounts that are already popular.", verdict: "Confirmed", verdictSource: c2019, source: c2015 },
-      { year: 2016, kind: "Prediction", claim: "Community hashtags like Black Twitter's will lose reach unless they get fast early engagement.", verdict: "Partly confirmed", verdictSource: c2021b, source: c2016 },
-      { year: 2019, kind: "Evidence", claim: "The top 10% of accounts got 62% of impressions in ranked feeds, versus 41% in chronological feeds.", source: c2019 },
-      { year: 2021, kind: "Evidence", claim: "Concentration kept rising: the top 10% of accounts got 71% of impressions.", source: c2021 },
-      { year: 2024, kind: "Shift", claim: "AI recommendation took over: 54% of impressions came from accounts users do not follow.", source: c2024 },
+      {
+        year: 2012,
+        kind: "Prediction",
+        claim:
+          "Chronological feeds give every voice equal visibility, and that openness will last as Twitter grows.",
+        verdict: "Not confirmed",
+        verdictSource: c2019,
+        source: c2012,
+      },
+      {
+        year: 2015,
+        kind: "Prediction",
+        claim: "Ranked feeds will concentrate attention among accounts that are already popular.",
+        verdict: "Confirmed",
+        verdictSource: c2019,
+        source: c2015,
+      },
+      {
+        year: 2016,
+        kind: "Prediction",
+        claim:
+          "Community hashtags like Black Twitter's will lose reach unless they get fast early engagement.",
+        verdict: "Partly confirmed",
+        verdictSource: c2021b,
+        source: c2016,
+      },
+      {
+        year: 2019,
+        kind: "Evidence",
+        claim:
+          "The top 10% of accounts got 62% of impressions in ranked feeds, versus 41% in chronological feeds.",
+        source: c2019,
+      },
+      {
+        year: 2021,
+        kind: "Evidence",
+        claim: "Concentration kept rising: the top 10% of accounts got 71% of impressions.",
+        source: c2021,
+      },
+      {
+        year: 2024,
+        kind: "Shift",
+        claim:
+          "AI recommendation took over: 54% of impressions came from accounts users do not follow.",
+        source: c2024,
+      },
     ],
     aiShift: [
-      { text: "Early researchers expected ranking inside the follow graph; modern AI feeds replace the follow graph.", source: c2024b },
-      { text: "The first signs of out-of-network recommendations appeared in 2021 audits.", source: c2021c },
+      {
+        text: "Early researchers expected ranking inside the follow graph; modern AI feeds replace the follow graph.",
+        source: c2024b,
+      },
+      {
+        text: "The first signs of out-of-network recommendations appeared in 2021 audits.",
+        source: c2021c,
+      },
     ],
     metric: [
       { label: "2019 chronological", year: 2019, value: 41, source: c2019 },
@@ -246,22 +354,41 @@ export async function getThenAndNow(topic: string): Promise<ThenAndNow | null> {
     ],
     summary: [
       { sentence: "In 2012, researchers expected chronological openness to last.", source: c2012 },
-      { sentence: "By 2015 they predicted ranking would concentrate visibility, which 2019 and 2021 audits confirmed.", source: c2019 },
-      { sentence: "The 2016 worry about community hashtags was only partly borne out.", source: c2021b },
-      { sentence: "By 2024, AI recommendation went further than anyone predicted, replacing the follow graph itself.", source: c2024b },
+      {
+        sentence:
+          "By 2015 they predicted ranking would concentrate visibility, which 2019 and 2021 audits confirmed.",
+        source: c2019,
+      },
+      {
+        sentence: "The 2016 worry about community hashtags was only partly borne out.",
+        source: c2021b,
+      },
+      {
+        sentence:
+          "By 2024, AI recommendation went further than anyone predicted, replacing the follow graph itself.",
+        source: c2024b,
+      },
     ],
   };
 }
 
 /* ---------- getRecentTopics ---------- */
-export interface RecentTopic { name: string; count: number; trend: "up" | "down" | "flat" }
+export interface RecentTopic {
+  name: string;
+  count: number;
+  trend: "up" | "down" | "flat";
+}
 /** GET /topics/recent?year= -> { year, topics }. year "all" = whole archive. */
-export async function getRecentTopics(year: number | "all" = 2024): Promise<{ year: number | "all"; topics: RecentTopic[] }> {
+export async function getRecentTopics(
+  year: number | "all" = 2024,
+): Promise<{ year: number | "all"; topics: RecentTopic[] }> {
   if (API_BASE) return http(`/topics/recent?year=${year}`);
   await delay(250);
   const { CONFERENCE_YEARS } = await import("@/data/mockRecords");
-  const valid = (CONFERENCE_YEARS as readonly number[]);
-  const inYear = mockRecords.filter((r) => valid.includes(r.year) && (year === "all" || r.year === year));
+  const valid = CONFERENCE_YEARS as readonly number[];
+  const inYear = mockRecords.filter(
+    (r) => valid.includes(r.year) && (year === "all" || r.year === year),
+  );
   const earlier = year === "all" ? [] : mockRecords.filter((r) => r.year < year);
   const counts = new Map<string, number>();
   for (const r of inYear) for (const k of r.keywords) counts.set(k, (counts.get(k) ?? 0) + 1);
@@ -270,7 +397,11 @@ export async function getRecentTopics(year: number | "all" = 2024): Promise<{ ye
     .map(([name, count]) => {
       if (year === "all") return { name, count, trend: "flat" as const };
       const avg = earlier.filter((r) => r.keywords.includes(name)).length / earlierYears;
-      return { name, count, trend: (count > avg ? "up" : count < avg ? "down" : "flat") as RecentTopic["trend"] };
+      return {
+        name,
+        count,
+        trend: (count > avg ? "up" : count < avg ? "down" : "flat") as RecentTopic["trend"],
+      };
     })
     .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name))
     .slice(0, 8);
@@ -280,7 +411,11 @@ export async function getRecentTopics(year: number | "all" = 2024): Promise<{ ye
 /* ---------- Browser storage (until accounts + backend exist) ---------- */
 function readStore<T>(key: string): T[] {
   if (typeof window === "undefined") return [];
-  try { return JSON.parse(window.localStorage.getItem(key) ?? "[]") as T[]; } catch { return []; }
+  try {
+    return JSON.parse(window.localStorage.getItem(key) ?? "[]") as T[];
+  } catch {
+    return [];
+  }
 }
 function writeStore<T>(key: string, v: T[]) {
   if (typeof window !== "undefined") window.localStorage.setItem(key, JSON.stringify(v));
@@ -289,7 +424,16 @@ const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(
 
 /* ---------- Saved items (bookmarks) ---------- */
 export type SavedType = "document" | "answer" | "trend";
-export interface SavedItem { id: string; type: SavedType; refId: string; title: string; year?: number | undefined; note?: string | undefined; citation?: string | undefined; savedAt: number }
+export interface SavedItem {
+  id: string;
+  type: SavedType;
+  refId: string;
+  title: string;
+  year?: number | undefined;
+  note?: string | undefined;
+  citation?: string | undefined;
+  savedAt: number;
+}
 const SAVED_KEY = "hindsight.saved";
 /** GET /saved */
 export async function getSavedItems(): Promise<SavedItem[]> {
@@ -309,17 +453,33 @@ export async function saveItem(i: Omit<SavedItem, "id" | "savedAt">): Promise<Sa
 /** PATCH /saved/:id */
 export async function updateSavedNote(id: string, note: string): Promise<void> {
   if (API_BASE) return http(`/saved/${id}`, { method: "PATCH", body: JSON.stringify({ note }) });
-  writeStore(SAVED_KEY, readStore<SavedItem>(SAVED_KEY).map((x) => (x.id === id ? { ...x, note } : x)));
+  writeStore(
+    SAVED_KEY,
+    readStore<SavedItem>(SAVED_KEY).map((x) => (x.id === id ? { ...x, note } : x)),
+  );
 }
 /** DELETE /saved/:id */
 export async function removeSavedItem(id: string): Promise<void> {
   if (API_BASE) return http(`/saved/${id}`, { method: "DELETE" });
-  writeStore(SAVED_KEY, readStore<SavedItem>(SAVED_KEY).filter((x) => x.id !== id));
+  writeStore(
+    SAVED_KEY,
+    readStore<SavedItem>(SAVED_KEY).filter((x) => x.id !== id),
+  );
 }
 
 /* ---------- Chat sessions ---------- */
-export interface ChatTurn { question: string; result?: NavigatorAnswer; error?: boolean }
-export interface ChatSession { id: string; title: string; createdAt: number; updatedAt: number; turns: ChatTurn[] }
+export interface ChatTurn {
+  question: string;
+  result?: NavigatorAnswer;
+  error?: boolean;
+}
+export interface ChatSession {
+  id: string;
+  title: string;
+  createdAt: number;
+  updatedAt: number;
+  turns: ChatTurn[];
+}
 const SESS_KEY = "hindsight.sessions";
 /** GET /sessions */
 export async function listSessions(): Promise<ChatSession[]> {
@@ -338,28 +498,50 @@ export async function createSession(): Promise<ChatSession> {
   const blank = all.find((s) => s.turns.length === 0);
   if (blank) return blank;
   const now = Date.now();
-  const s: ChatSession = { id: uid(), title: "New chat", createdAt: now, updatedAt: now, turns: [] };
+  const s: ChatSession = {
+    id: uid(),
+    title: "New chat",
+    createdAt: now,
+    updatedAt: now,
+    turns: [],
+  };
   writeStore(SESS_KEY, [...all, s]);
   return s;
 }
 /** PUT /sessions/:id/turns  body: ChatTurn[] */
 export async function saveTurns(id: string, turns: ChatTurn[]): Promise<void> {
-  if (API_BASE) return http(`/sessions/${id}/turns`, { method: "PUT", body: JSON.stringify(turns) });
-  writeStore(SESS_KEY, readStore<ChatSession>(SESS_KEY).map((s) =>
-    s.id === id
-      ? { ...s, turns, updatedAt: Date.now(), title: s.title === "New chat" && turns[0] ? turns[0].question.slice(0, 60) : s.title }
-      : s,
-  ));
+  if (API_BASE)
+    return http(`/sessions/${id}/turns`, { method: "PUT", body: JSON.stringify(turns) });
+  writeStore(
+    SESS_KEY,
+    readStore<ChatSession>(SESS_KEY).map((s) =>
+      s.id === id
+        ? {
+            ...s,
+            turns,
+            updatedAt: Date.now(),
+            title: s.title === "New chat" && turns[0] ? turns[0].question.slice(0, 60) : s.title,
+          }
+        : s,
+    ),
+  );
 }
 /** PATCH /sessions/:id */
 export async function renameSession(id: string, title: string): Promise<void> {
-  if (API_BASE) return http(`/sessions/${id}`, { method: "PATCH", body: JSON.stringify({ title }) });
-  writeStore(SESS_KEY, readStore<ChatSession>(SESS_KEY).map((s) => (s.id === id ? { ...s, title } : s)));
+  if (API_BASE)
+    return http(`/sessions/${id}`, { method: "PATCH", body: JSON.stringify({ title }) });
+  writeStore(
+    SESS_KEY,
+    readStore<ChatSession>(SESS_KEY).map((s) => (s.id === id ? { ...s, title } : s)),
+  );
 }
 /** DELETE /sessions/:id */
 export async function deleteSession(id: string): Promise<void> {
   if (API_BASE) return http(`/sessions/${id}`, { method: "DELETE" });
-  writeStore(SESS_KEY, readStore<ChatSession>(SESS_KEY).filter((s) => s.id !== id));
+  writeStore(
+    SESS_KEY,
+    readStore<ChatSession>(SESS_KEY).filter((s) => s.id !== id),
+  );
 }
 
 export function formatCitation(r: ArchiveRecord) {

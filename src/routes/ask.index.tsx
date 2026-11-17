@@ -14,9 +14,16 @@ export const Route = createFileRoute("/ask/")({
   head: () => ({
     meta: [
       { title: "Ask the Navigator · Social Media Research Navigator" },
-      { name: "description", content: "Ask questions and get answers grounded in cited conference archive documents." },
+      {
+        name: "description",
+        content: "Ask questions and get answers grounded in cited conference archive documents.",
+      },
       { property: "og:title", content: "Ask the Navigator" },
-      { property: "og:description", content: "Answers with numbered citations to original SMTCW sources, plus Then & Now comparisons." },
+      {
+        property: "og:description",
+        content:
+          "Answers with numbered citations to original SMTCW sources, plus Then & Now comparisons.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -32,9 +39,16 @@ function AskIndex() {
     (async () => {
       const latest = (await listSessions())[0];
       const s = search.ask || !latest ? await createSession() : latest;
-      if (!cancel) navigate({ to: "/ask/$sessionId", params: { sessionId: s.id }, search, replace: true });
+      if (!cancel)
+        navigate({ to: "/ask/$sessionId", params: { sessionId: s.id }, search, replace: true });
     })();
-    return () => { cancel = true; };
+    return () => {
+      cancel = true;
+    };
   }, [navigate, search]);
-  return <SiteLayout><Skeleton className="h-96 w-full" /></SiteLayout>;
+  return (
+    <SiteLayout>
+      <Skeleton className="h-96 w-full" />
+    </SiteLayout>
+  );
 }
